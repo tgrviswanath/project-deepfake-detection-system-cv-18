@@ -50,12 +50,15 @@ def _get_face_net():
 def _get_model():
     global _model
     if _model is None:
-        model = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1)
-        model.classifier[1] = nn.Linear(model.classifier[1].in_features, 1)
-        if os.path.exists(settings.MODEL_PATH):
-            model.load_state_dict(torch.load(settings.MODEL_PATH, map_location="cpu"))
-        model.eval()
-        _model = model
+        try:
+            model = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1)
+            model.classifier[1] = nn.Linear(model.classifier[1].in_features, 1)
+            if os.path.exists(settings.MODEL_PATH):
+                model.load_state_dict(torch.load(settings.MODEL_PATH, map_location="cpu"))
+            model.eval()
+            _model = model
+        except Exception as e:
+            raise FileNotFoundError(f"Deepfake detection model unavailable: {e}")
     return _model
 
 
